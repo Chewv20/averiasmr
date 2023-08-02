@@ -24,7 +24,12 @@ class AveriasController extends Controller
         $lineas = DB::connection('pgsql2')->table('lineas')
         ->orderBy('id','asc')
         ->get();
-        return view("averias-create",compact('lineas'));
+        $averias = DB::connection('pgsql2')
+        ->table('tipos')
+        ->where('status','S')
+        ->orderBy('tipo','asc')
+        ->get();
+        return view("averias-create",compact('lineas','averias'));
     }
 
     /**

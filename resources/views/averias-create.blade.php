@@ -89,7 +89,7 @@
                                         @php
                                             $config = ['format' => 'LT'];
                                         @endphp
-                                        <x-adminlte-input-date name="Hora" label="Hora" :config="$config" placeholder="hh:mm"   required/>
+                                        <x-adminlte-input-date id="hora" name="Hora" label="Hora" :config="$config" placeholder="hh:mm"   required/>
                                     </div>
                                 </div>
                             </div>
@@ -192,19 +192,9 @@
                                     <div class="col">
                                         <x-adminlte-select name="tipoaveria" label="Tipo de averia" required>
                                             <option selected>--Seleccione la averia--</option>
-                                            <option>Linea 1</option>
-                                            <option>Linea 2</option>
-                                            <option>Linea 3</option>
-                                            <option>Linea 4</option>
-                                            <option>Linea 5</option>
-                                            <option>Linea 6</option>
-                                            <option>Linea 7</option>
-                                            <option>Linea 8</option>
-                                            <option>Linea 9</option>
-                                            <option>Linea A</option>
-                                            <option>Linea B</option>
-                                            <option>Linea 12</option>
-                    
+                                            @foreach ($averias as $item)
+                                            <option value="{{ $item -> tipo }}">{{ $item -> tipo }}.- {{ $item -> descripcion }}</option>   
+                                            @endforeach                    
                                         </x-adminlte-select>
                                     </div>
                                 </div>
@@ -253,7 +243,7 @@
                                                         <x-adminlte-input id="expCond" type="number" label="Expediente" name="conductorN"/>
                                                     </div>
                                                     <div class="col">
-                                                        <x-adminlte-input id="nomCond" name="conductor" label="Nombre"/>
+                                                        <x-adminlte-input id="nomCond" name="conductor" label="Nombre" disabled/>
                                                     </div>
                                                     <div class="col-2">
                                                         <br>
@@ -278,16 +268,21 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <x-adminlte-input type="number" label="Expediente" name="conductorN"/>
+                                                        <x-adminlte-input id="expReg" type="number" label="Expediente" name="conductorN"/>
                                                     </div>
                                                     <div class="col">
-                                                        <x-adminlte-input name="conductor" label="Nombre"/>
+                                                        <x-adminlte-input id="nomReg" name="conductor" label="Nombre" disabled/>
                                                     </div>
                                                     <div class="col-2">
                                                         <br>
                                                         <x-adminlte-button label="verificar" theme="secondary"/>
                                                     </div>   
-                                                </div>  
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <p id="catReg"></p>
+                                                    </div>
+                                                </div> 
                                             </div>
                                         </div>
                                     </div>
@@ -301,16 +296,21 @@
                                             <div class="card-body">
                                                 <div class="row">
                                                     <div class="col-2">
-                                                        <x-adminlte-input type="number" label="Expediente" name="conductorN"/>
+                                                        <x-adminlte-input id="expJReg" type="number" label="Expediente" name="conductorN"/>
                                                     </div>
                                                     <div class="col">
-                                                        <x-adminlte-input name="conductor" label="Nombre"/>
+                                                        <x-adminlte-input id="nomJReg" name="conductor" label="Nombre" disabled/>
                                                     </div>
                                                     <div class="col-2">
                                                         <br>
                                                         <x-adminlte-button label="verificar" theme="secondary"/>
                                                     </div>   
                                                 </div>  
+                                                <div class="row">
+                                                    <div class="col">
+                                                        <p id="catJReg"></p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -489,6 +489,60 @@
                     document.getElementById("catCond").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
                 }
             }).catch(error => console.error(error));
+        })
+
+        document.getElementById('expReg').addEventListener('change',(e)=>{
+            console.log(e.target.value);
+            fetch('/averias/getp',{
+                method : 'POST',
+                body: JSON.stringify({personal : e.target.value}),
+                headers:{
+                    'Content-Type': 'application/json',
+                    "X-CSRF-Token": csrfToken
+                }
+            }).then(response=>{
+                return response.json()
+            }).then( data=>{
+                if(data[0]){
+                    console.log(data);
+                    document.getElementById("nomReg").value=data[0].nombre;
+                    document.getElementById("catReg").innerHTML=data[0].categoria
+                }else{
+                    console.log(data);
+                    document.getElementById("nomReg").value="SIN NOMBRE (USUARIO UNIVERSAL)";
+                    document.getElementById("expReg").value=99999;
+                    document.getElementById("catReg").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
+                }
+            }).catch(error => console.error(error));
+        })
+
+        document.getElementById('expJReg').addEventListener('change',(e)=>{
+            console.log(e.target.value);
+            fetch('/averias/getp',{
+                method : 'POST',
+                body: JSON.stringify({personal : e.target.value}),
+                headers:{
+                    'Content-Type': 'application/json',
+                    "X-CSRF-Token": csrfToken
+                }
+            }).then(response=>{
+                return response.json()
+            }).then( data=>{
+                if(data[0]){
+                    console.log(data);
+                    document.getElementById("nomJReg").value=data[0].nombre;
+                    document.getElementById("catJReg").innerHTML=data[0].categoria
+                }else{
+                    console.log(data);
+                    document.getElementById("nomJReg").value="SIN NOMBRE (USUARIO UNIVERSAL)";
+                    document.getElementById("expJReg").value=99999;
+                    document.getElementById("catJReg").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
+                }
+            }).catch(error => console.error(error));
+        })
+
+        document.getElementById('hora').addEventListener('change', (e)=>{
+            console.log(e.target.value);
         })
 
 
