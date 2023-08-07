@@ -24,7 +24,14 @@ class HomeController extends Controller
     public function index()
     {
         return view('home');
-    }
+    } 
+    /* public function index(Request $request)
+    {
+        $request->session()->put(['Prueba'=>'Valor de prueba']);
+        $request->session()->put(['Prueba2'=>'Valor de prueba2']);
+
+        return $request->session()->all();
+    } */
 
 
 }
