@@ -49,13 +49,13 @@
     @endif
 
     @if (Session::has('error'))
-    <div class="alert alert-danger alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert">
-            <i class="fa fa-times"></i>
-        </button>
-        <strong>Error !</strong> {{ session('error') }}
-    </div>
-@endif
+        <div class="alert alert-danger alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert">
+                <i class="fa fa-times"></i>
+            </button>
+            <strong>Error !</strong> {{ session('error') }}
+        </div>
+    @endif
 
     @if ($errors->any())
     <div class="alert alert-danger">
@@ -130,7 +130,7 @@
                                     </div>
                                     <div class="col-2">
                                         <br>
-                                        <x-adminlte-button label="verificar" theme="secondary"/>
+                                        <x-adminlte-button id="jefeRV" label="verificar" theme="secondary"/>
                                     </div> 
                                 </div>
 
@@ -155,7 +155,7 @@
                                     </div>
                                     <div class="col">
                                         <label for="">Fecha</label>
-                                        <input type="date" name="fecha" max='{{ $fechahoy }}' id="fecha" max="$fechahoy" required>
+                                        <input type="date" name="fecha" id="fecha" required>
                                     </div>
                                     <div class="col">
                                         <x-adminlte-select id="linea_id" name="linea" label="Linea" fgroup-class="col-md-25" required>
@@ -397,7 +397,8 @@
 @stop
 
 @section('js')
-
+<link href='https://cdn.jsdelivr.net/npm/sweetalert2@10.10.1/dist/sweetalert2.min.css'>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10.16.6/dist/sweetalert2.all.min.js"></script>
 <script>
     let linea = 0
     let motriz1 = 0
@@ -627,12 +628,11 @@
         })
 
         document.getElementById('reguladorV').addEventListener('click',(e)=>{
-            if(e.target.value==''){
-                console.log("no trae nada");
-            }
+            var expReg = $("#expReg").val();
+            console.log(expReg);
             fetch('/averias/getp',{
                 method : 'POST',
-                body: JSON.stringify({personal : e.target.value}),
+                body: JSON.stringify({personal : expReg}),
                 headers:{
                     'Content-Type': 'application/json',
                     "X-CSRF-Token": csrfToken
@@ -649,6 +649,32 @@
                     document.getElementById("nomReg").value="SIN NOMBRE (USUARIO UNIVERSAL)";
                     document.getElementById("expReg").value=99999;
                     document.getElementById("catReg").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
+                }
+            }).catch(error => console.error(error));
+        })
+
+        document.getElementById('jefeRV').addEventListener('click',(e)=>{
+            var expReg = $("#expReg").val();
+            console.log(expReg);
+            fetch('/averias/getp',{
+                method : 'POST',
+                body: JSON.stringify({personal : expReg}),
+                headers:{
+                    'Content-Type': 'application/json',
+                    "X-CSRF-Token": csrfToken
+                }
+            }).then(response=>{
+                return response.json()
+            }).then( data=>{
+                if(data[0]){
+                    console.log(data);
+                    document.getElementById("nomJReg").value=data[0].nombre;
+                    document.getElementById("catJReg").innerHTML=data[0].categoria
+                }else{
+                    console.log(data);
+                    document.getElementById("nomJReg").value="SIN NOMBRE (USUARIO UNIVERSAL)";
+                    document.getElementById("expJReg").value=99999;
+                    document.getElementById("catJReg").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
                 }
             }).catch(error => console.error(error));
         })
@@ -675,6 +701,52 @@
             segundosD=parseInt(e.target.value)
             duracion=parseInt(minutosD+parseInt(e.target.value))
             document.getElementById('duracion').value=duracion
+        })
+
+        document.getElementById('fecha').addEventListener('change',(e)=>{
+            console.log(e.target.value);
+            
+            let today = new Date();
+            let day = today.getDate();
+            let month = today.getMonth() + 1;
+            let year = today.getFullYear();
+            let fechaS = String(e.target.value)
+
+            let anioS = fechaS.substr(0,4)
+            let mesS = fechaS.substr(5,2)
+            let diaS = fechaS.substr(8,2)
+
+            let anio = parseInt(anioS)
+            let mes = parseInt(mesS)
+            let dia = parseInt(diaS)
+
+            if(anio>year){
+                Swal.fire(
+                    {icon: 'error',
+                    title: 'Oops...',
+                    text: 'Fecha erronea'}
+                )
+                document.getElementById('fecha').value=""
+            }else{
+                if(mes>month){
+                    Swal.fire(
+                    {icon: 'error',
+                    title: 'Oops...',
+                    text: 'Fecha erronea'}
+                    )
+                    document.getElementById('fecha').value=""
+                }else if(mes == month){
+                    if(dia>day){
+                        Swal.fire(
+                            {icon: 'error',
+                            title: 'Oops...',
+                            text: 'Fecha erronea'}
+                        )
+                        document.getElementById('fecha').value=""
+                    }
+                }
+            }
+            
         })
 
     });

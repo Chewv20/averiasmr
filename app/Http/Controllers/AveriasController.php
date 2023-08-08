@@ -50,11 +50,6 @@ class AveriasController extends Controller
         $request->session()->put(['expedienteReg'=>$request->expedienteReg]);
         $request->session()->put(['turnoJefeReg'=>$request->turnoJefeReg]);
         $request->session()->put(['expedienteJR'=>$request->expedienteJR]);
-        
-        $request->validate([
-            'fecha' => 'required|date|before:today',
-            'cve_motrices' => 'required|numeric|different:0'
-        ],$message=['before'=>'Fecha erronea verificala','different'=>'Motrices erroneas']);
 
         $comprueba = DB::connection('pgsql2')->table('reportes')
         ->where([['fecha',$request->fecha],
@@ -106,8 +101,8 @@ class AveriasController extends Controller
         
         DB::connection('pgsql2')->insert('insert into reportes (fecha, hora, estacion, via, tren, carro, falla, retardo, conductor, elaboro, vobo, motrices, fec_mov, id, tipo, vueltas, vigente, retardo_m, retardo_s, evacua, hor_mov, atendido, numero, bitacora, ip_captura, motrices_tren, material, funcion_tren) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->fecha, $request->hora, $request->estacion, $request->via, $request->tren, $request->carro, $request->falla, $request->retardo, $conductor, $elaboro, $request->expedienteReg, $request->cve_motrices, $fec_mov, $id, $request->tipo, $vueltas, $vigente, $minR, $segR, $request->evacua, $hor_mov, $atendido, $request->numero, $request->folio, $ip, $request->motrices_tren, $request->material, $request->funcion_tren]);
         DB::connection('pgsql2')->update('update folio set id = ? where anio = ?', [$consulta_id[0]->id+1,$anio]);
-        //return redirect()->route('averias.create')->with('success', 'Se guardo el reporte: '.$id);
-        return $request;
+        return redirect()->route('averias.create')->with('success', 'Se guardo el reporte: '.$id);
+        //return $request;
         
     }
 
