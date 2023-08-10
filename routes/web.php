@@ -25,6 +25,7 @@ Route::resource('linea',LineaController::class);
 Route::post('/averias/get',[AveriasController::class,'get_estaciones']);
 Route::post('/averias/getm',[AveriasController::class,'get_motrices']);
 Route::post('/averias/getp',[AveriasController::class,'getPlantilla']);
+Route::post('/averias/getr',[AveriasController::class,'getReporte']);
 
 Auth::routes();
 

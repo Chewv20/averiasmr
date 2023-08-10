@@ -21,8 +21,8 @@
     @php
         $tR = 0;
         $tJR = 0;
-        $eR = 99999;
-        $eJR = 99999;
+        $eR = 0;
+        $eJR = 0;
         $fechahoy = date("d-m-Y");
         if (isset($turnoReg)) {
             $tR = $turnoReg;
@@ -38,36 +38,7 @@
         }
     @endphp
 
-    {{-- Message --}}
-    @if (Session::has('success'))
-    <div class="alert alert-success alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert">
-            <i class="fa fa-times"></i>
-        </button>
-        <strong>Éxito !</strong> {{ session('success') }}
-    </div>
-    @endif
-
-    @if (Session::has('error'))
-        <div class="alert alert-danger alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert">
-                <i class="fa fa-times"></i>
-            </button>
-            <strong>Error !</strong> {{ session('error') }}
-        </div>
-    @endif
-
-    @if ($errors->any())
-    <div class="alert alert-danger">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-    @endif
-
-    <form action="/averias" method="post">
+    <form id="idform" action="/averias" method="post">
         @csrf
         <div class="row">
             <div class="col">
@@ -123,7 +94,7 @@
                                         </x-adminlte-select>
                                     </div>
                                     <div class="col-2">
-                                        <x-adminlte-input id="expJReg" type="number" value='{{ $eJR }}' label="Expediente" name="expedienteJR" requiered/>
+                                        <x-adminlte-input id="expJReg" type="number" value='{{ $eJR }}' label="Expediente" name="expedienteJReg" required/>
                                     </div>
                                     <div class="col">
                                         <x-adminlte-input id="nomJReg" name="jeferegN" label="Nombre" disabled/>
@@ -151,7 +122,7 @@
                             <div class="card">
                                 <div class="row">
                                     <div class="col">
-                                        <x-adminlte-input type="number" min="0" name="folio" label="Folio" placeholder="Folio"   required/>
+                                        <x-adminlte-input id="bitacora" type="number" min="0" name="folio" label="Folio" placeholder="Folio"   required/>
                                     </div>
                                     <div class="col">
                                         <label for="">Fecha</label>
@@ -166,7 +137,7 @@
                                         </x-adminlte-select>
                                     </div>
                                     <div class="col">
-                                        <x-adminlte-input type="number" min=0 name="numero" label="Numero" placeholder="Numero" required/>
+                                        <x-adminlte-input id="numero" type="number" min=0 name="numero" label="Numero" placeholder="Numero" required/>
                                     </div>
                                     <div class="col">
                                         <label for="">Hora</label>
@@ -214,7 +185,7 @@
                                         <p class="btn btn-link" id="motrizV">Verificar</p>
                                     </div>
                                     <div class="col-1">
-                                        <x-adminlte-input type="number"  name="tren" label="Tren" min=0 max=80 placeholder="Tren" required/>
+                                        <x-adminlte-input type="number" id="tren" name="tren" label="Tren" min=0 max=80 placeholder="Tren" required/>
                                     </div>
                                     <div class="col-2">
                                         <x-adminlte-input id="carro" name="carro" label="Carro en falla" placeholder="Carro en falla" onkeyup="mayus(this);" required/>
@@ -233,7 +204,7 @@
                             <div class="card">
                                 <div class="row">
                                     <div class="col">
-                                        <x-adminlte-textarea name="falla" label="Descripción de la falla" placeholder="Descripción de la falla" onkeyup="mayus(this);" required/>
+                                        <x-adminlte-textarea id="falla" name="falla" label="Descripción de la falla" placeholder="Descripción de la falla" onkeyup="mayus(this);" required/>
                                     </div>
                                 </div>
                             </div>
@@ -245,7 +216,7 @@
                             <div class="card">
                                 <div class="row">
                                     <div class="col">
-                                        <x-adminlte-select name="tipo" label="Tipo de averia" required>
+                                        <x-adminlte-select id="tipo" name="tipo" label="Tipo de averia" required>
                                             <option value="" >--Seleccione la averia--</option>
                                             @foreach ($averias as $item)
                                             <option value="{{ $item -> tipo }}">{{ $item -> tipo }}.- {{ $item -> descripcion }}</option>   
@@ -279,7 +250,7 @@
                                         </div>
                                     </div>
                                     <div class="col-2">
-                                        <x-adminlte-input type="number" name="vueltas" min=0 label="Vueltas perdidas"/>
+                                        <x-adminlte-input id="vueltas" type="number" name="vueltas" min=0 label="Vueltas perdidas"/>
                                     </div>
                                 </div>
                             </div>
@@ -368,7 +339,7 @@
                             <div class="card">
                                 <div class="row">
                                     <div class="col-5">
-                                        <x-adminlte-select name="evacua" label="Desalojado/Evacuado" required>
+                                        <x-adminlte-select id="evacua" name="evacua" label="Desalojado/Evacuado" required>
                                             <option value="N" >No se desalojo</option>
                                             <option value="T">Tren Completo</option>
                                             <option value="C">Carro/Parcial</option>
@@ -381,7 +352,7 @@
 
                     <div class="row" >
                         <div class="col" style="text-align: center">
-                            <x-adminlte-button class="btn-flat" type="submit" label="Enviar" theme="success" icon="fas fa-lg fa-save"/>
+                            <x-adminlte-button id="submit" class="btn-flat" type="submit" label="Enviar" theme="success" icon="fas fa-lg fa-save"/>
                         </div>
                     </div>
 
@@ -409,6 +380,10 @@
     let duracion = 0
     let minutosD = 0
     let segundosD = 0
+    let conductor = 99999
+    let elaboro = 99999
+    let vueltas = 0
+
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
     
     $(document).ready(function(){
@@ -441,6 +416,7 @@
                 document.getElementById("funcion_id").innerHTML=funciones;
                 document.getElementById("motriz1").value=0
                 document.getElementById("motriz2").value=0
+                document.getElementById("material").innerHTML=""
 
             }).catch(error => console.error(error));
             linea = e.target.value
@@ -456,7 +432,7 @@
             motriz2 = aux.substr(1,4)
             
             let tren = (motriz1<motriz2 ?  motriz1+"/"+motriz2 : motriz2+"/"+motriz1)
-            console.log(tren);
+            //console.log(tren);
             //console.log("motriz2: "+tren);
             fetch('/averias/getm',{
                     method : 'POST',
@@ -524,7 +500,7 @@
         })
 
         document.getElementById('expCond').addEventListener('change',(e)=>{
-            console.log(e.target.value);
+            //console.log(e.target.value);
             fetch('/averias/getp',{
                 method : 'POST',
                 body: JSON.stringify({personal : e.target.value}),
@@ -536,7 +512,7 @@
                 return response.json()
             }).then( data=>{
                 if(data[0]){
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomCond").value=data[0].nombre;
                     document.getElementById("catCond").innerHTML=data[0].categoria
                 }else{
@@ -549,7 +525,7 @@
         })
 
         document.getElementById('expReg').addEventListener('change',(e)=>{
-            console.log(e.target.value);
+            //console.log(e.target.value);
             fetch('/averias/getp',{
                 method : 'POST',
                 body: JSON.stringify({personal : e.target.value}),
@@ -561,11 +537,11 @@
                 return response.json()
             }).then( data=>{
                 if(data[0]){
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomReg").value=data[0].nombre;
                     document.getElementById("catReg").innerHTML=data[0].categoria
                 }else{
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomReg").value="SIN NOMBRE (USUARIO UNIVERSAL)";
                     document.getElementById("expReg").value=99999;
                     document.getElementById("catReg").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
@@ -574,7 +550,7 @@
         })
 
         document.getElementById('expJReg').addEventListener('change',(e)=>{
-            console.log(e.target.value);
+            //console.log(e.target.value);
             fetch('/averias/getp',{
                 method : 'POST',
                 body: JSON.stringify({personal : e.target.value}),
@@ -586,11 +562,11 @@
                 return response.json()
             }).then( data=>{
                 if(data[0]){
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomJReg").value=data[0].nombre;
                     document.getElementById("catJReg").innerHTML=data[0].categoria
                 }else{
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomJReg").value="SIN NOMBRE (USUARIO UNIVERSAL)";
                     document.getElementById("expJReg").value=99999;
                     document.getElementById("catJReg").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
@@ -599,7 +575,7 @@
         })
 
         document.getElementById('expRep').addEventListener('change',(e)=>{
-            console.log(e.target.value);
+            //console.log(e.target.value);
             fetch('/averias/getp',{
                 method : 'POST',
                 body: JSON.stringify({personal : e.target.value}),
@@ -611,11 +587,11 @@
                 return response.json()
             }).then( data=>{
                 if(data[0]){
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomRep").value=data[0].nombre;
                     document.getElementById("catRep").innerHTML=data[0].categoria
                 }else{
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomRep").value="SIN NOMBRE (USUARIO UNIVERSAL)";
                     document.getElementById("expRep").value=99999;
                     document.getElementById("catRep").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
@@ -623,13 +599,9 @@
             }).catch(error => console.error(error));
         })
 
-        document.getElementById('funcion_id').addEventListener('change',(e)=>{
-            console.log(e.target.value);
-        })
-
         document.getElementById('reguladorV').addEventListener('click',(e)=>{
             var expReg = $("#expReg").val();
-            console.log(expReg);
+            //console.log(expReg);
             fetch('/averias/getp',{
                 method : 'POST',
                 body: JSON.stringify({personal : expReg}),
@@ -641,11 +613,11 @@
                 return response.json()
             }).then( data=>{
                 if(data[0]){
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomReg").value=data[0].nombre;
                     document.getElementById("catReg").innerHTML=data[0].categoria
                 }else{
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomReg").value="SIN NOMBRE (USUARIO UNIVERSAL)";
                     document.getElementById("expReg").value=99999;
                     document.getElementById("catReg").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
@@ -654,8 +626,8 @@
         })
 
         document.getElementById('jefeRV').addEventListener('click',(e)=>{
-            var expReg = $("#expReg").val();
-            console.log(expReg);
+            var expReg = $("#expJReg").val();
+            //console.log(expReg);
             fetch('/averias/getp',{
                 method : 'POST',
                 body: JSON.stringify({personal : expReg}),
@@ -667,11 +639,11 @@
                 return response.json()
             }).then( data=>{
                 if(data[0]){
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomJReg").value=data[0].nombre;
                     document.getElementById("catJReg").innerHTML=data[0].categoria
                 }else{
-                    console.log(data);
+                    //console.log(data);
                     document.getElementById("nomJReg").value="SIN NOMBRE (USUARIO UNIVERSAL)";
                     document.getElementById("expJReg").value=99999;
                     document.getElementById("catJReg").innerHTML="SIN CATEGORIA (CUALQUIER CATEGORIA)"
@@ -704,7 +676,7 @@
         })
 
         document.getElementById('fecha').addEventListener('change',(e)=>{
-            console.log(e.target.value);
+            //console.log(e.target.value);
             
             let today = new Date();
             let day = today.getDate();
@@ -727,7 +699,7 @@
                     text: 'Fecha erronea'}
                 )
                 document.getElementById('fecha').value=""
-            }else{
+            }else if(anio == year){
                 if(mes>month){
                     Swal.fire(
                     {icon: 'error',
@@ -749,10 +721,181 @@
             
         })
 
+        document.getElementById('submit').addEventListener('click',(e)=>{
+            e.preventDefault()
+            console.log("Ha dado click en enviar");
+            let resultado = compruebaRep();
+            if(resultado){
+                let res = guardar()
+                if(res){
+                    console.log("Entra si la informacion se guardo");
+                }
+            }
+    
+        })
+
     });
+
+    function compruebaRep(){
+        let bitacora = document.getElementById('bitacora').value
+        let numero = document.getElementById('numero').value
+        let hora = document.getElementById('hora').value
+        let motrices = document.getElementById('cve_motrices').value
+        let estacion = document.getElementById('estacion_id').value
+        let fecha = document.getElementById('fecha').value
+        let error = validar()
+        if (!error){
+            fetch('/averias/getr',{
+                method : 'POST',
+                body: JSON.stringify({
+                    bitacora : bitacora,
+                    numero : numero,
+                    hora : hora,
+                    motrices : motrices,
+                    estacion : estacion,
+                    fecha : fecha
+                    
+                }),
+                headers:{
+                    'Content-Type': 'application/json',
+                    "X-CSRF-Token": csrfToken
+                }
+            }).then(response=>{
+                return response.json()
+            }).then( data=>{        
+                if(data[0]){
+                    Swal.fire(
+                        {icon: 'error',
+                        title: 'Se intenta guardar un reporte existente',
+                        text: data[0].id}
+                    )
+                    return false
+                }
+            }).catch(error => console.error(error));
+        }else{
+            Swal.fire(
+                {icon: 'error',
+                title: 'Revisa el formulario',
+                text: 'Revisa que todos los datos sean correctos'}
+            )
+            return false
+        }
+        return true
+    }
 
     function mayus(e) {
         e.value = e.value.toUpperCase();
+    }
+
+    function validar(){
+        let error = false;
+        /*  */
+
+        let inputsrequeridos = document.querySelectorAll('#idform [required]')  
+        for(let i=0;i<inputsrequeridos.length;i++){
+            if(inputsrequeridos[i].value =='' ){
+                inputsrequeridos[i].style.borderColor = '#FF0400'
+                error = true
+            }else if(inputsrequeridos[i].value == 0 ){
+                inputsrequeridos[i].style.borderColor = '#FF0400'
+                error = true
+            }else{
+                inputsrequeridos[i].style.removeProperty('border');
+            }
+        }
+
+        if(document.getElementById('expCond').value != ''){
+            conductor = document.getElementById('expCond').value
+        }
+        if(document.getElementById('expRep').value != ''){
+            elaboro = document.getElementById('expRep').value
+        }
+        if(document.getElementById('minutos_R').value != ''){
+            minutosR = document.getElementById('minutos_R').value
+        }
+        if(document.getElementById('segundos_R').value != ''){
+            segundosR = document.getElementById('segundos_R').value
+        }
+        if(document.getElementById('minutos_D').value != ''){
+            minutosD = document.getElementById('minutos_D').value
+        }
+        if(document.getElementById('segundos_R').value != ''){
+            segundosD = document.getElementById('segundos_D').value
+        }
+        if(document.getElementById('vueltas').value != ''){
+            vueltas = document.getElementById('vueltas').value
+        }
+        return error;
+    }
+
+    function guardar(){
+        let PturnoReg = document.getElementById('turnoReg').value
+        let PexpedienteReg = document.getElementById('expReg').value
+        let PturnoJReg = document.getElementById('turnoJReg').value
+        let PexpedienteJR = document.getElementById('expJReg').value
+        let Pbitacora = document.getElementById('bitacora').value
+        let Pfecha = document.getElementById('fecha').value
+        let Pnumero = document.getElementById('numero').value
+        let Phora = document.getElementById('hora').value
+        let Pvia = document.getElementById('vias').value
+        let Pestacion = document.getElementById('estacion_id').value
+        let Pmotrices_tren = document.getElementById('motrices_tren').value
+        let Ptren = document.getElementById('tren').value
+        let Pcarro = document.getElementById('carro').value
+        let Pfalla = document.getElementById('falla').value
+        let Pretardo = document.getElementById('retardo').value
+        let Pvobo = document.getElementById('expJReg').value
+        let Pmotrices = document.getElementById('cve_motrices').value
+        let Ptipo = document.getElementById('tipo').value
+        let Pevacua = document.getElementById('evacua').value
+        let Pmaterial = document.getElementById('materialT').value
+        let Pfuncion_tren = document.getElementById('funcion_id').value
+        let resultado = []
+        console.log("Intentando guardar el reporte...");
+
+        fetch('/averias/',{
+                method : 'POST',
+                body: JSON.stringify({
+                    turnoReg : PturnoReg,
+                    expedienteReg : PexpedienteReg,
+                    turnoJReg : PturnoJReg,
+                    expedienteJR : PexpedienteJR,
+                    bitacora : Pbitacora,
+                    fecha : Pfecha,
+                    numero : Pnumero,
+                    hora : Phora,
+                    via : Pvia,
+                    estacion : Pestacion,
+                    motrices_tren : Pmotrices_tren,
+                    tren : Ptren,
+                    carro : Pcarro,
+                    falla : Pfalla,
+                    retardo : Pretardo,
+                    vobo : Pvobo,
+                    motrices : Pmotrices,
+                    tipo : Ptipo,
+                    evacua: Pevacua,
+                    material : Pmaterial,
+                    funcion_tren : Pfuncion_tren
+                }),
+                headers:{
+                    'Content-Type': 'application/json',
+                    "X-CSRF-Token": csrfToken
+                }
+            }).then(response=>{
+                return response.json()
+            }).then( data=>{
+                if(data.success){
+                    Swal.fire(
+                        {icon: 'success',
+                        title: 'Reporte guardado con éxito',
+                        text: data.id}
+                    ) 
+                }
+            }).catch(error => console.error(error));
+
+        return true
+
     }
     
 </script>
