@@ -359,7 +359,7 @@
                 </div>
             </div>
         </div>
-        <x-adminlte-input id="cve_motrices"  name="cve_motrices" hidden required/>
+        <x-adminlte-input id="cve_motrices" name="cve_motrices" hidden required/>
         <x-adminlte-input id="retardo" value="0" name="retardo" hidden />
         <x-adminlte-input id="duracion" value="0" name="duracion" hidden />
         <x-adminlte-input id="motrices_tren" name="motrices_tren" hidden required/>
@@ -388,8 +388,7 @@
     
     $(document).ready(function(){
 
-        document.getElementById('linea_id').addEventListener('change',
-        (e)=>{
+        document.getElementById('linea_id').addEventListener('change',(e)=>{
             
             fetch('/averias/get',{
                 method : 'POST',
@@ -676,65 +675,36 @@
         })
 
         document.getElementById('fecha').addEventListener('change',(e)=>{
-            //console.log(e.target.value);
-            
-            let today = new Date();
-            let day = today.getDate();
-            let month = today.getMonth() + 1;
-            let year = today.getFullYear();
-            let fechaS = String(e.target.value)
-
-            let anioS = fechaS.substr(0,4)
-            let mesS = fechaS.substr(5,2)
-            let diaS = fechaS.substr(8,2)
-
-            let anio = parseInt(anioS)
-            let mes = parseInt(mesS)
-            let dia = parseInt(diaS)
-
-            if(anio>year){
+            let fecha = new Date(e.target.value)
+            if(fecha >new Date() ){
                 Swal.fire(
                     {icon: 'error',
                     title: 'Oops...',
                     text: 'Fecha erronea'}
                 )
                 document.getElementById('fecha').value=""
-            }else if(anio == year){
-                if(mes>month){
-                    Swal.fire(
-                    {icon: 'error',
-                    title: 'Oops...',
-                    text: 'Fecha erronea'}
-                    )
-                    document.getElementById('fecha').value=""
-                }else if(mes == month){
-                    if(dia>day){
-                        Swal.fire(
-                            {icon: 'error',
-                            title: 'Oops...',
-                            text: 'Fecha erronea'}
-                        )
-                        document.getElementById('fecha').value=""
-                    }
-                }
-            }
-            
+            }           
         })
 
         document.getElementById('submit').addEventListener('click',(e)=>{
             e.preventDefault()
-            console.log("Ha dado click en enviar");
-            let resultado = compruebaRep();
-            if(resultado){
-                let res = guardar()
-                if(res){
-                    console.log("Entra si la informacion se guardo");
-                }
+            let resultado = validar();
+            
+            if(!resultado){                
+                compruebaRep()
+            }else{
+                Swal.fire(
+                    {icon: 'error',
+                    title: 'Revisa los campos',
+                    text: 'Revisa que todos los campos sean correctos'}
+                )
             }
-    
         })
-
     });
+    
+    function mayus(e) {
+        e.value = e.value.toUpperCase();
+    }
 
     function compruebaRep(){
         let bitacora = document.getElementById('bitacora').value
@@ -743,53 +713,40 @@
         let motrices = document.getElementById('cve_motrices').value
         let estacion = document.getElementById('estacion_id').value
         let fecha = document.getElementById('fecha').value
-        let error = validar()
-        if (!error){
-            fetch('/averias/getr',{
-                method : 'POST',
-                body: JSON.stringify({
-                    bitacora : bitacora,
-                    numero : numero,
-                    hora : hora,
-                    motrices : motrices,
-                    estacion : estacion,
-                    fecha : fecha
-                    
-                }),
-                headers:{
-                    'Content-Type': 'application/json',
-                    "X-CSRF-Token": csrfToken
-                }
-            }).then(response=>{
-                return response.json()
-            }).then( data=>{        
-                if(data[0]){
-                    Swal.fire(
-                        {icon: 'error',
-                        title: 'Se intenta guardar un reporte existente',
-                        text: data[0].id}
-                    )
-                    return false
-                }
-            }).catch(error => console.error(error));
-        }else{
-            Swal.fire(
-                {icon: 'error',
-                title: 'Revisa el formulario',
-                text: 'Revisa que todos los datos sean correctos'}
-            )
-            return false
-        }
-        return true
-    }
 
-    function mayus(e) {
-        e.value = e.value.toUpperCase();
+        fetch('/averias/getr',{
+            method : 'POST',
+            body: JSON.stringify({
+                bitacora : bitacora,
+                numero : numero,
+                hora : hora,
+                motrices : motrices,
+                estacion : estacion,
+                fecha : fecha        
+            }),
+            headers:{
+                'Content-Type': 'application/json',
+                "X-CSRF-Token": csrfToken
+            }
+        }).then(response=>{
+            return response.json()
+        }).then( data=>{      
+            if(data[0]){            
+                Swal.fire(
+                    {icon: 'error',
+                    title: 'Se intenta guardar un reporte existente',
+                    text: data[0].id}
+                )
+            
+            }else{
+                guardar();
+            }
+        }).catch(error => console.error(error));    
+        
     }
 
     function validar(){
         let error = false;
-        /*  */
 
         let inputsrequeridos = document.querySelectorAll('#idform [required]')  
         for(let i=0;i<inputsrequeridos.length;i++){
@@ -850,8 +807,7 @@
         let Pevacua = document.getElementById('evacua').value
         let Pmaterial = document.getElementById('materialT').value
         let Pfuncion_tren = document.getElementById('funcion_id').value
-        let resultado = []
-        console.log("Intentando guardar el reporte...");
+    
 
         fetch('/averias/',{
                 method : 'POST',
@@ -871,9 +827,14 @@
                     carro : Pcarro,
                     falla : Pfalla,
                     retardo : Pretardo,
+                    conductor : conductor,
+                    elaboro : elaboro,
                     vobo : Pvobo,
                     motrices : Pmotrices,
                     tipo : Ptipo,
+                    vueltas : vueltas,
+                    minR : minutosR,
+                    segR : segundosR,
                     evacua: Pevacua,
                     material : Pmaterial,
                     funcion_tren : Pfuncion_tren
@@ -890,11 +851,34 @@
                         {icon: 'success',
                         title: 'Reporte guardado con éxito',
                         text: data.id}
-                    ) 
+                    )
+                    limpiar() 
                 }
             }).catch(error => console.error(error));
 
         return true
+
+    }
+
+    function limpiar(){
+        document.getElementById('bitacora').value = "" 
+        document.getElementById('numero').value = ""
+        document.getElementById('hora').value = ""
+        document.getElementById('vias').value = ""
+        document.getElementById('estacion_id').value = ""
+        document.getElementById('motrices_tren').value = ""
+        document.getElementById('tren').value = "" 
+        document.getElementById('carro').value = ""
+        document.getElementById('falla').value = ""
+        document.getElementById('retardo').value = 0
+        document.getElementById('cve_motrices').value = 0
+        document.getElementById('tipo').value = ""
+        document.getElementById('evacua').value = ""
+        document.getElementById('materialT').value = ""
+        document.getElementById('funcion_id').value = ""
+        document.getElementById('motriz1').value=0
+        document.getElementById('motriz2').value=0
+        document.getElementById("material").innerHTML=""
 
     }
     

@@ -66,9 +66,8 @@ class AveriasController extends Controller
         $ip=(getenv('HTTP_X_FORWARDED_FOR')? getenv('HTTP_X_FORWARDED_FOR') : getenv('REMOTE_ADDR'));
         //$ip="50.192.168.1";
         
-        //DB::connection('pgsql2')->insert('insert into reportes (fecha, hora, estacion, via, tren, carro, falla, retardo, conductor, elaboro, vobo, motrices, fec_mov, id, tipo, vueltas, vigente, retardo_m, retardo_s, evacua, hor_mov, atendido, numero, bitacora, ip_captura, motrices_tren, material, funcion_tren) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->fecha, $request->hora, $request->estacion, $request->via, $request->tren, $request->carro, $request->falla, $request->retardo, $conductor, $elaboro, $request->expedienteReg, $request->cve_motrices, $fec_mov, $id, $request->tipo, $vueltas, $vigente, $minR, $segR, $request->evacua, $hor_mov, $atendido, $request->numero, $request->folio, $ip, $request->motrices_tren, $request->material, $request->funcion_tren]);
-        //DB::connection('pgsql2')->update('update folio set id = ? where anio = ?', [$consulta_id[0]->id+1,$anio]);
-        //return redirect()->route('averias.create')->with('success', 'Se guardo el reporte: '.$id);
+        DB::connection('pgsql2')->insert('insert into reportes (fecha, hora, estacion, via, tren, carro, falla, retardo, conductor, elaboro, vobo, motrices, fec_mov, id, tipo, vueltas, vigente, retardo_m, retardo_s, evacua, hor_mov, atendido, numero, bitacora, ip_captura, motrices_tren, material, funcion_tren) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->fecha, $request->hora, $request->estacion, $request->via, $request->tren, $request->carro, $request->falla, $request->retardo, $request->conductor, $request->elaboro, $request->expedienteJR, $request->motrices, $fec_mov, $id, $request->tipo, $request->vueltas, $vigente, $request->minR, $request->segR, $request->evacua, $hor_mov, $atendido, $request->numero, $request->bitacora, $ip, $request->motrices_tren, $request->material, $request->funcion_tren]);
+        DB::connection('pgsql2')->update('update folio set id = ? where anio = ?', [$consulta_id[0]->id+1,$anio]);
         $respuesta = [
             'success' => true,
             'id' => $id
