@@ -1,9 +1,8 @@
 <?php
 
-use App\Http\Controllers\AveriasController;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\LineaController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AveriasController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,19 +19,21 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::resource('averias',AveriasController::class);
-Route::resource('linea',LineaController::class);
-Route::post('/averias/get',[AveriasController::class,'get_estaciones']);
-Route::post('/averias/getm',[AveriasController::class,'get_motrices']);
-Route::post('/averias/getp',[AveriasController::class,'getPlantilla']);
-Route::post('/averias/getr',[AveriasController::class,'getReporte']);
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Auth::routes();
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('averias',AveriasController::class);
+    Route::post('/averias/get',[AveriasController::class,'get_estaciones']);
+    Route::post('/averias/getm',[AveriasController::class,'get_motrices']);
+    Route::post('/averias/getp',[AveriasController::class,'getPlantilla']);
+    Route::post('/averias/getr',[AveriasController::class,'getReporte']);
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+});
 
-Auth::routes();
-
-Route::get('/home', function() {
-    return view('home');
-})->name('home')->middleware('auth'); 
+require __DIR__.'/auth.php';
