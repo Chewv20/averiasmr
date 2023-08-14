@@ -16,7 +16,7 @@ use App\Http\Controllers\AveriasController;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth/login');
 });
 
 Route::get('/dashboard', function () {

@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Averias MR</title>
+        <link rel="icon" href="vendor/adminlte/dist/img/AdminLTELogo.png" sizes="16x16">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
