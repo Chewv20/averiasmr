@@ -3,7 +3,7 @@
 @section('title', 'Averias MR')
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Dashboard</h1>
+    <h1 class="m-0 text-dark">Sistema de Registro de Averias del Material Rodante</h1>
 @stop
 
 @section('content')
@@ -11,7 +11,7 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-body">
-                    <p class="mb-0">You are logged in!</p>
+                    <p class="mb-0">Bienvenido al sistema de averias de material rodante</p>
                 </div>
             </div>
         </div>
