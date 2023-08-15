@@ -12,9 +12,10 @@
             <div class="card">
                 <div class="card-body">
                     <p class="mb-0">Bienvenido al sistema de averias de material rodante</p>
+                    <h4>Bienvenido {{ auth()->user()->name}} </h4>
                 </div>
 
-                <h4>Bienvenido {{ auth()->user()->name}} </h4>
+                
             </div>
         </div>
     </div>

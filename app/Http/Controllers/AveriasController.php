@@ -15,7 +15,7 @@ class AveriasController extends Controller
      */
     public function index()
     {
-        //
+        return view('averias');
     }
 
     /**
@@ -51,8 +51,6 @@ class AveriasController extends Controller
         $request->session()->put(['turnoJReg'=>$request->turnoJReg]);
         $request->session()->put(['expedienteJR'=>$request->expedienteJR]);
 
-        
-
         $fec_mov = date("Y-m-d");
         $hor_mov = date('H:i');
         $anio = substr($request->fecha,0,4);
@@ -66,14 +64,13 @@ class AveriasController extends Controller
         $vigente ='S';
         $atendido = 'N';
         
-        //DB::connection('pgsql4')->insert('insert into reportes (turnoReg, expedienteReg, turnoJefeR, expedienteJefeReg, folio, linea, fecha, numero, hora, via, estacion, cve_motrices, motrices, material, tren, carro, falla, retraso, duracion, vueltasperdidas, expedienteConductor, expedientePersonaReporta, funcionTren, horaFuncion, vigente, evacua, hor_mov, fec_mov, atendido, id, usuario) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [$request->turnoReg, $request->expedienteReg, $request->turnoJReg, $request->expedienteJR, $request->bitacora, $request->linea, $request->fecha, $request->numero, $request->hora, $request->via, $request->estacion, $request->motrices, $request->motrices_tren, $request->material, $request->tren, $request->carro, $request->falla, $request->retardo, $request->duracion, $request->vueltas, $request->conductor, $request->elaboro, $request->funcion_tren, $request->horaFuncion, $vigente, $request->evacua, $hor_mov, $fec_mov, $atendido, $id, $request->usuario]);
-        DB::insert('insert into reportes (id, turno_reg, expediente_reg, turno_jefereg, expediente_jefereg, folio, fecha, linea, numero, hora, via, estacion, tren, carro, falla, tipo, vueltas, expediente_c, expediente_reporta, funcion_tren, hora_funcion, evacua, cve_motrices, retardo, duracion_incidente, motrices_tren, material, usuario, fec_mov, hora_mov, vigente, atendido) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$id,$request->turnoReg, $request->expedienteReg, $request->turnoJefeReg, $request->expedienteJReg,$request->folio,$request->fecha,$request->linea,$request->numero,$request->hora,$request->via,$request->estacion,$request->tren,$request->carro,$request->falla,$request->tipo,$request->vueltas,$request->expedienteC,$request->elaboroE,$request->funcion_tren,$request->horaF,$request->evacua,$request->cve_motrices,$request->retardo,$request->duracion,$request->motrices_tren,$request->material,$request->usuario,$fec_mov,$hor_mov,$vigente,$atendido]);
-        //DB::connection('pgsql2')->update('update folio set id = ? where anio = ?', [$consulta_id[0]->id+1,$anio]);
+        DB::insert('insert into reportes (id, turno_reg, expediente_reg, turno_jefereg, expediente_jefereg, folio, fecha, linea, numero, hora, via, estacion, tren, carro, falla, tipo, vueltas, expediente_c, expediente_reporta, funcion_tren, hora_funcion, evacua, cve_motrices, retardo, duracion_incidente, motrices_tren, material, usuario, fec_mov, hora_mov, vigente, atendido) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$id,$request->turnoReg, $request->expedienteReg, $request->turnoJReg, $request->expedienteJR,$request->folio,$request->fecha,$request->linea,$request->numero,$request->hora,$request->via,$request->estacion,$request->tren,$request->carro,$request->falla,$request->tipo,$request->vueltas,$request->conductor,$request->elaboro,$request->funcion_tren,$request->horaFuncion,$request->evacua,$request->motrices,$request->retardo,$request->duracion,$request->motrices_tren,$request->material,$request->usuario,$fec_mov,$hor_mov,$vigente,$atendido]);
+        DB::connection('pgsql2')->update('update folio set id = ? where anio = ?', [$consulta_id[0]->id+1,$anio]);
         $respuesta = [
             'success' => true,
             'id' => $id
         ];
-        return $request;
+        return $respuesta;
         
     }
 
@@ -164,6 +161,18 @@ class AveriasController extends Controller
         ->where([
             ['fecha',$request->fecha],
             ['hora',$request->hora],
+            ['motrices',$request->motrices],
+            ['estacion',$request->estacion],
+            ['numero',$request->numero],
+            ['bitacora',$request->bitacora]
+        ])
+        ->orderBy('fecha','desc')
+        ->get(); 
+
+        $comprueba2 = DB::connection('pgsql')->table('reportes')
+        ->where([
+            ['fecha',$request->fecha],
+            ['hora',$request->hora],
             ['cve_motrices',$request->motrices],
             ['estacion',$request->estacion],
             ['numero',$request->numero],
@@ -171,25 +180,12 @@ class AveriasController extends Controller
         ])
         ->orderBy('fecha','desc')
         ->get();
-
-        return response()->json($comprueba,200);
-
-        /* $comprueba2 = DB::connection('pgsql')->table('reportes')
-        ->where([['fecha',$request->fecha],
-            ['hora',$request->hora],
-            ['cve_motrices',$request->motrices],
-            ['estacion',$request->estacion],
-            ['numero',$request->numero],
-            ['folio',$request->folio]
-        ])
-        ->orderBy('fecha','desc')
-        ->get();
         
         $respuesta = [
-            'primero' => $comprueba,
-            'segundo' => $comprueba2
+            'primera' => $comprueba,
+            'segunda' => $comprueba2
         ];
-        return response()->json($respuesta,200); */
+        return response()->json($respuesta,200);
         
     }
 

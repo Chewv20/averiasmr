@@ -386,6 +386,7 @@
     let conductor = 99999
     let elaboro = 99999
     let vueltas = 0
+    let hora_func = '00:00'
 
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
     
@@ -710,22 +711,23 @@
     }
 
     function compruebaRep(){
-        let bitacora = document.getElementById('bitacora').value
-        let numero = document.getElementById('numero').value
-        let hora = document.getElementById('hora').value
-        let motrices = document.getElementById('cve_motrices').value
-        let estacion = document.getElementById('estacion_id').value
-        let fecha = document.getElementById('fecha').value
+        let Pbitacora = document.getElementById('bitacora').value
+        let Pnumero = document.getElementById('numero').value
+        let Phora = document.getElementById('hora').value
+        let Pmotrices = document.getElementById('cve_motrices').value
+        let Pestacion = document.getElementById('estacion_id').value
+        let Pfecha = document.getElementById('fecha').value
 
-        fetch('/averias/getr',{
+        
+        fetch('/averias/getr/',{
             method : 'POST',
             body: JSON.stringify({
-                bitacora : bitacora,
-                numero : numero,
-                hora : hora,
-                motrices : motrices,
-                estacion : estacion,
-                fecha : fecha        
+                bitacora : Pbitacora,
+                numero : Pnumero,
+                hora : Phora,
+                motrices : Pmotrices,
+                estacion : Pestacion,
+                fecha : Pfecha        
             }),
             headers:{
                 'Content-Type': 'application/json',
@@ -734,13 +736,20 @@
         }).then(response=>{
             return response.json()
         }).then( data=>{      
-            if(data[0]){            
-                Swal.fire(
+            if(data.primera[0] || data.segunda[0]){            
+                if(data.primera[0]){
+                    Swal.fire(
                     {icon: 'error',
                     title: 'Se intenta guardar un reporte existente',
-                    text: data[0].id}
+                    text: data.primera[0].id}
                 )
-            
+                }else{
+                    Swal.fire(
+                    {icon: 'error',
+                    title: 'Se intenta guardar un reporte existente',
+                    text: data.segunda[0].id}
+                    )
+                }
             }else{
                 guardar();
             }
@@ -785,6 +794,9 @@
         if(document.getElementById('vueltas').value != ''){
             vueltas = document.getElementById('vueltas').value
         }
+        if(document.getElementById('horaF').value != ''){
+            hora_func = document.getElementById('horaF').value
+        }
         return error;
     }
 
@@ -809,9 +821,7 @@
         let Pevacua = document.getElementById('evacua').value
         let Pmaterial = document.getElementById('materialT').value
         let Pfuncion_tren = document.getElementById('funcion_id').value
-        let Phorafuncion = document.getElementById('horaF').value
-    
-        console.log(PexpedienteJR);
+        let Pusuario = document.getElementById('usuario').value
 
         fetch('/averias/',{
                 method : 'POST',
@@ -819,6 +829,7 @@
                     turnoReg : PturnoReg,
                     expedienteReg : PexpedienteReg,
                     turnoJReg : PturnoJReg,
+                    linea : linea,
                     expedienteJR : PexpedienteJR,
                     folio : Pbitacora,
                     fecha : Pfecha,
@@ -836,12 +847,12 @@
                     motrices : Pmotrices,
                     tipo : Ptipo,
                     vueltas : vueltas,
-                    minR : minutosR,
-                    segR : segundosR,
+                    duracion : duracion,
                     evacua: Pevacua,
                     material : Pmaterial,
                     funcion_tren : Pfuncion_tren,
-                    horaFuncion : Phorafuncion
+                    horaFuncion : hora_func,
+                    usuario : Pusuario
                 }),
                 headers:{
                     'Content-Type': 'application/json',

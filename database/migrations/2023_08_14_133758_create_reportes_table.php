@@ -28,11 +28,11 @@ return new class extends Migration
             $table->string('carro');
             $table->text('falla');
             $table->string('tipo');
-            $table->float('vueltas')->nullable();
-            $table->integer('expediente_c')->nullable();
-            $table->integer('expediente_reporta')->nullable();
+            $table->float('vueltas');
+            $table->integer('expediente_c');
+            $table->integer('expediente_reporta');
             $table->string('funcion_tren');
-            $table->string('hora_funcion')->nullable();
+            $table->string('hora_funcion');
             $table->string('evacua');
             $table->integer('cve_motrices');
             $table->integer('retardo');

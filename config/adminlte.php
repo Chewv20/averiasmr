@@ -300,6 +300,11 @@ return [
             'url'  => '/averias/create',
             'icon' => 'fa fa-train',
         ],
+        [
+            'text' => 'Consulta de averias de averias',
+            'url'  => '/averias',
+            'icon' => 'fa fa-train',
+        ],
 
     ],
 
