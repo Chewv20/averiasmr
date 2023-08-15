@@ -35,6 +35,7 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'max:255','unique:'.User::class],
             //'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'id_rol' => ['required'],
         ]);
 
         $user = User::create([
@@ -42,11 +43,10 @@ class RegisteredUserController extends Controller
             'username' => $request->username,
             //'email' => $request->email,
             'password' => Hash::make($request->password),
+            'id_rol' => $request->id_rol
         ]);
 
         event(new Registered($user));
-
-        Auth::login($user);
 
         return redirect(RouteServiceProvider::HOME);
     }

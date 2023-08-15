@@ -305,6 +305,12 @@ return [
             'url'  => '/averias',
             'icon' => 'fa fa-train',
         ],
+        [
+            'text' => 'Registrar usuarios',
+            'url'  => 'register',
+            'icon' => 'fa fa-user',
+        ],
+
 
     ],
 
