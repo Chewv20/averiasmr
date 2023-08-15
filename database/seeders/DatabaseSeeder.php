@@ -21,5 +21,17 @@ class DatabaseSeeder extends Seeder
         $user -> username = 'admin';
         $user -> password = "12345";
         $user -> save();
+
+        $user1 = new User;
+        $user1 -> name = "Regulador";
+        $user1 -> username = 'regulador';
+        $user1 -> password = "12345";
+        $user1 -> save();
+
+        $user2 = new User;
+        $user2 -> name = "Jefe Regulador";
+        $user2 -> username = 'jeferegulador';
+        $user2 -> password = "12345";
+        $user2 -> save();
     }
 }

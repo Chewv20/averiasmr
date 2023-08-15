@@ -47,11 +47,6 @@
                     <div class="row">
                         <div class="col">
                             <div class="card">
-                                {{-- <p>El turno del regulador es: {{ $tR }}</p>
-                                <p>El turno del jefe regulador es: {{ $tJR }}</p>
-                                <p>El expediente del regulador es: {{ $eR }}</p>
-                                <p>El expediente del jefe regulador es: {{ $eJR }}</p>
-                                <p>la fecha es: {{ $fechahoy }}</p> --}}
                                 <div class="row">
                                     <div class="col-3">
                                         <x-adminlte-select id="turnoReg" name="turnoReg" label="Turno Regulador"  required>
@@ -332,13 +327,19 @@
                                             <option value="" >--Seleccione una opcion--</option>
                                         </x-adminlte-select>
                                     </div>
+                                    <div class="col-3">
+                                        <label for="">Hora</label>
+                                        <div class="cs-form">
+                                            <input type="time" id="horaF" name="horaF" class="form-control" />  
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-4">
                             <div class="card">
                                 <div class="row">
-                                    <div class="col-5">
+                                    <div class="col">
                                         <x-adminlte-select id="evacua" name="evacua" label="Desalojado/Evacuado" required>
                                             <option value="N" >No se desalojo</option>
                                             <option value="T">Tren Completo</option>
@@ -364,6 +365,8 @@
         <x-adminlte-input id="duracion" value="0" name="duracion" hidden />
         <x-adminlte-input id="motrices_tren" name="motrices_tren" hidden required/>
         <x-adminlte-input id="materialT" name="material" hidden required/>
+        <x-adminlte-input id="usuario" name="usuario" value='{{ auth()->user()->username }}' hidden required/>
+
     </form>
 @stop
 
@@ -801,13 +804,14 @@
         let Pcarro = document.getElementById('carro').value
         let Pfalla = document.getElementById('falla').value
         let Pretardo = document.getElementById('retardo').value
-        let Pvobo = document.getElementById('expJReg').value
         let Pmotrices = document.getElementById('cve_motrices').value
         let Ptipo = document.getElementById('tipo').value
         let Pevacua = document.getElementById('evacua').value
         let Pmaterial = document.getElementById('materialT').value
         let Pfuncion_tren = document.getElementById('funcion_id').value
+        let Phorafuncion = document.getElementById('horaF').value
     
+        console.log(PexpedienteJR);
 
         fetch('/averias/',{
                 method : 'POST',
@@ -816,7 +820,7 @@
                     expedienteReg : PexpedienteReg,
                     turnoJReg : PturnoJReg,
                     expedienteJR : PexpedienteJR,
-                    bitacora : Pbitacora,
+                    folio : Pbitacora,
                     fecha : Pfecha,
                     numero : Pnumero,
                     hora : Phora,
@@ -829,7 +833,6 @@
                     retardo : Pretardo,
                     conductor : conductor,
                     elaboro : elaboro,
-                    vobo : Pvobo,
                     motrices : Pmotrices,
                     tipo : Ptipo,
                     vueltas : vueltas,
@@ -837,7 +840,8 @@
                     segR : segundosR,
                     evacua: Pevacua,
                     material : Pmaterial,
-                    funcion_tren : Pfuncion_tren
+                    funcion_tren : Pfuncion_tren,
+                    horaFuncion : Phorafuncion
                 }),
                 headers:{
                     'Content-Type': 'application/json',
