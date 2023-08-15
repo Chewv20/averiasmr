@@ -15,7 +15,21 @@ class AveriasController extends Controller
      */
     public function index()
     {
-        return view('averias');
+
+        $heads = [
+            ['label' => 'ID'],
+            ['label' => 'Folio'],
+            ['label' => 'Numero'],
+            ['label' => 'Fecha'],
+            ['label' => 'Falla'],
+        ];
+        $averias = DB::select('select * from reportes order by id desc');
+        /* $averias = DB::connection('pgsql2')->table('reportes')
+        ->where('fecha','!=','2023-01-01')
+        ->orderBy('id','desc')
+        ->limit(10)
+        ->get(); */
+        return view('averias',compact('averias','heads'));
     }
 
     /**

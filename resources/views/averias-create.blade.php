@@ -894,6 +894,9 @@
         document.getElementById('motriz1').value=0
         document.getElementById('motriz2').value=0
         document.getElementById("material").innerHTML=""
+        document.getElementById("expCond").innerHTML=""
+        document.getElementById("expRep").innerHTML=""
+        document.getElementById("horaF").innerHTML=""
 
     }
     
