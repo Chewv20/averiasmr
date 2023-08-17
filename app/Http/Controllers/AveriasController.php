@@ -69,7 +69,7 @@ class AveriasController extends Controller
         $vigente ='S';
         $atendido = 'N';
         
-        DB::insert('insert into reportes (id, turno_reg, expediente_reg, turno_jefereg, expediente_jefereg, folio, fecha, linea, numero, hora, via, estacion, tren, carro, falla, tipo, vueltas, expediente_c, expediente_reporta, funcion_tren, hora_funcion, evacua, cve_motrices, retardo, duracion_incidente, motrices_tren, material, usuario, fec_mov, hora_mov, vigente, atendido) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$id,$request->turnoReg, $request->expedienteReg, $request->turnoJReg, $request->expedienteJR,$request->folio,$request->fecha,$request->linea,$request->numero,$request->hora,$request->via,$request->estacion,$request->tren,$request->carro,$request->falla,$request->tipo,$request->vueltas,$request->conductor,$request->elaboro,$request->funcion_tren,$request->horaFuncion,$request->evacua,$request->motrices,$request->retardo,$request->duracion,$request->motrices_tren,$request->material,$request->usuario,$fec_mov,$hor_mov,$vigente,$atendido]);
+        DB::insert('insert into reportes (id, turno_reg, expediente_reg, turno_jefereg, expediente_jefereg, bitacora, fecha, linea, numero, hora, via, estacion, tren, carro, falla, tipo, vueltas, expediente_c, expediente_reporta, funcion_tren, hora_funcion, evacua, cve_motrices, retardo, duracion_incidente, motrices_tren, material, usuario, fec_mov, hora_mov, vigente, atendido) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$id,$request->turnoReg, $request->expedienteReg, $request->turnoJReg, $request->expedienteJR,$request->folio,$request->fecha,$request->linea,$request->numero,$request->hora,$request->via,$request->estacion,$request->tren,$request->carro,$request->falla,$request->tipo,$request->vueltas,$request->conductor,$request->elaboro,$request->funcion_tren,$request->horaFuncion,$request->evacua,$request->motrices,$request->retardo,$request->duracion,$request->motrices_tren,$request->material,$request->usuario,$fec_mov,$hor_mov,$vigente,$atendido]);
         DB::connection('pgsql2')->update('update folio set id = ? where anio = ?', [$consulta_id[0]->id+1,$anio]);
         $respuesta = [
             'success' => true,
@@ -187,7 +187,7 @@ class AveriasController extends Controller
             ['cve_motrices',$request->motrices],
             ['estacion',$request->estacion],
             ['numero',$request->numero],
-            ['folio',$request->bitacora]
+            ['bitacora',$request->bitacora]
         ])
         ->orderBy('fecha','desc')
         ->get();
@@ -206,7 +206,12 @@ class AveriasController extends Controller
         ->where('id','LIKE','STC23%')
         ->orderBy('id','desc')
         ->get();
-        return datatables($averias)->toJson();
+
+        $averias2 = DB::select('select * from reportes order by id desc');
+
+        $respuesta = $averias -> concat($averias2);
+
+        return datatables($respuesta)->toJson();
     }
 
 }

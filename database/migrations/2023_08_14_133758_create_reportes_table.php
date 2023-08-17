@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('expediente_reg');
             $table->integer('turno_jefereg');
             $table->integer('expediente_jefereg');
-            $table->integer('folio');
+            $table->integer('bitacora');
             $table->date('fecha');
             $table->string('linea');
             $table->integer('numero');
