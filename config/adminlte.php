@@ -301,7 +301,7 @@ return [
             'icon' => 'fa fa-train',
         ],
         [
-            'text' => 'Consulta de averias de averias',
+            'text' => 'Consulta de averias',
             'url'  => '/averias',
             'icon' => 'fa fa-train',
         ],

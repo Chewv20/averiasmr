@@ -15,21 +15,12 @@ class AveriasController extends Controller
      */
     public function index()
     {
-
-        $heads = [
-            ['label' => 'ID'],
-            ['label' => 'Folio'],
-            ['label' => 'Numero'],
-            ['label' => 'Fecha'],
-            ['label' => 'Falla'],
-        ];
-        $averias = DB::select('select * from reportes order by id desc');
-        /* $averias = DB::connection('pgsql2')->table('reportes')
-        ->where('fecha','!=','2023-01-01')
+        //$averias = DB::select('select * from reportes order by id desc');
+        $averias = DB::connection('pgsql2')->table('reportes')
+        ->where('id','LIKE','STC23%')
         ->orderBy('id','desc')
-        ->limit(10)
-        ->get(); */
-        return view('averias',compact('averias','heads'));
+        ->get();
+        return view('averias',compact('averias'));
     }
 
     /**
@@ -85,6 +76,8 @@ class AveriasController extends Controller
             'id' => $id
         ];
         return $respuesta;
+
+        
         
     }
 
@@ -120,7 +113,8 @@ class AveriasController extends Controller
         //
     }
 
-    public function get_estaciones(Request $request){
+    public function get_estaciones(Request $request)
+    {
         if(isset($request -> texto)){
             $estaciones = DB::connection('pgsql2')->table('estaciones')
             ->where('linea',$request->texto)
@@ -144,7 +138,8 @@ class AveriasController extends Controller
         }
     }
 
-    public function get_motrices(Request $request){
+    public function get_motrices(Request $request)
+    {
 
         $consulta = DB::connection('pgsql2')->table('trenes')
         ->where([['linea','LIKE',$request->linea],
@@ -156,7 +151,8 @@ class AveriasController extends Controller
         return response()->json($consulta,200);
     }
 
-    public function getPlantilla(Request $request){
+    public function getPlantilla(Request $request)
+    {
         if(isset($request -> personal)){
             $personal = DB::connection('pgsql3')
             ->table('plantilla')
@@ -170,7 +166,8 @@ class AveriasController extends Controller
         }
     }
 
-    public function getReporte(Request $request){  
+    public function getReporte(Request $request)
+    {  
         $comprueba = DB::connection('pgsql2')->table('reportes')
         ->where([
             ['fecha',$request->fecha],
@@ -201,6 +198,15 @@ class AveriasController extends Controller
         ];
         return response()->json($respuesta,200);
         
+    }
+
+    public function get()
+    {
+        $averias = DB::connection('pgsql2')->table('reportes')
+        ->where('id','LIKE','STC23%')
+        ->orderBy('id','desc')
+        ->get();
+        return datatables($averias)->toJson();
     }
 
 }

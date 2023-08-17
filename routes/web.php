@@ -32,6 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/averias/getm',[AveriasController::class,'get_motrices']);
     Route::post('/averias/getp',[AveriasController::class,'getPlantilla']);
     Route::post('/averias/getr',[AveriasController::class,'getReporte']);
+    Route::post('/averias/geta',[AveriasController::class,'get'])->name('getAll');
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 });
