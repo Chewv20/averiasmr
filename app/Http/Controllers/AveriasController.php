@@ -16,7 +16,8 @@ class AveriasController extends Controller
     public function index()
     {
         //$averias = DB::select('select * from reportes order by id desc');
-        $averias = DB::connection('pgsql2')->table('reportes')
+        $averias = DB::connection('pgsql2')
+        ->table('reportes')
         ->where('id','LIKE','STC23%')
         ->orderBy('id','desc')
         ->get();
@@ -28,22 +29,18 @@ class AveriasController extends Controller
      */
     public function create(Request $request)
     {
-        $lineas = DB::connection('pgsql2')->table('lineas')
-        ->orderBy('id','asc')
+        $dependencias = DB::connection('pgsql')
+        ->table('dependencias')
         ->get();
+
         $averias = DB::connection('pgsql2')
         ->table('tipos')
         ->where('status','S')
         ->orderBy('tipo','asc')
         ->get();
 
-        $turnoReg = $request->session()->pull('turnoReg');
-        $expedienteReg = $request->session()->pull('expedienteReg');
-        $turnoJReg = $request->session()->pull('turnoJefeReg');
-        $expedienteJR = $request->session()->pull('expedienteJR');
-
         
-        return view("averias-create",compact('lineas','averias','turnoReg','expedienteReg','turnoJReg','expedienteJR'));
+        return view("averias-create",compact('dependencias','averias'));
     }
 
     /**
@@ -51,10 +48,6 @@ class AveriasController extends Controller
      */
     public function store(Request $request)
     {
-        $request->session()->put(['turnoReg'=>$request->turnoReg]);
-        $request->session()->put(['expedienteReg'=>$request->expedienteReg]);
-        $request->session()->put(['turnoJReg'=>$request->turnoJReg]);
-        $request->session()->put(['expedienteJR'=>$request->expedienteJR]);
 
         $fec_mov = date("Y-m-d");
         $hor_mov = date('H:i');
@@ -69,7 +62,7 @@ class AveriasController extends Controller
         $vigente ='S';
         $atendido = 'N';
         
-        DB::insert('insert into reportes (id, turno_reg, expediente_reg, turno_jefereg, expediente_jefereg, bitacora, fecha, linea, numero, hora, via, estacion, tren, carro, falla, tipo, vueltas, expediente_c, expediente_reporta, funcion_tren, hora_funcion, evacua, cve_motrices, retardo, duracion_incidente, motrices_tren, material, usuario, fec_mov, hora_mov, vigente, atendido) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$id,$request->turnoReg, $request->expedienteReg, $request->turnoJReg, $request->expedienteJR,$request->folio,$request->fecha,$request->linea,$request->numero,$request->hora,$request->via,$request->estacion,$request->tren,$request->carro,$request->falla,$request->tipo,$request->vueltas,$request->conductor,$request->elaboro,$request->funcion_tren,$request->horaFuncion,$request->evacua,$request->motrices,$request->retardo,$request->duracion,$request->motrices_tren,$request->material,$request->usuario,$fec_mov,$hor_mov,$vigente,$atendido]);
+        DB::insert('insert into reportes (id, turno_reg, expediente_reg, turno_jefereg, expediente_jefereg, bitacora, fecha, linea, numero, hora, via, estacion, tren, carro, falla, tipo, vueltas, expediente_c, expediente_reporta, funcion_tren, hora_funcion, evacua, cve_motrices, retardo, duracion_incidente, motrices_tren, material, usuario, fec_mov, hora_mov, vigente, atendido, dependencia) values(?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', [$id,$request->turnoReg, $request->expedienteReg, $request->turnoJReg, $request->expedienteJR,$request->folio,$request->fecha,$request->linea,$request->numero,$request->hora,$request->via,$request->estacion,$request->tren,$request->carro,$request->falla,$request->tipo,$request->vueltas,$request->conductor,$request->elaboro,$request->funcion_tren,$request->horaFuncion,$request->evacua,$request->motrices,$request->retardo,$request->duracion,$request->motrices_tren,$request->material,$request->usuario,$fec_mov,$hor_mov,$vigente,$atendido, $request->dependencia]);
         DB::connection('pgsql2')->update('update folio set id = ? where anio = ?', [$consulta_id[0]->id+1,$anio]);
         $respuesta = [
             'success' => true,
@@ -111,6 +104,17 @@ class AveriasController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getL(Request $request)
+    {
+        $consulta = DB::connection('pgsql')
+        ->table('lineas')
+        ->where([
+        ['dependencia',$request->dependencia],
+        ])
+        ->get();
+        return response()->json($consulta,200);
     }
 
     public function get_estaciones(Request $request)
@@ -200,15 +204,22 @@ class AveriasController extends Controller
         
     }
 
-    public function get()
+    public function get(Request $request)
     {
-        $averias = DB::connection('pgsql2')->table('reportes')
-        ->where('id','LIKE','STC23%')
-        ->orderBy('id','desc')
+
+        $averias = DB::connection('pgsql2')
+        ->table('reportes')
+        ->whereDate('fecha','>=',$request->fecha,'and')
+        ->whereDate('fecha','<=',$request->fecha2)
+        ->orderBy('fecha','asc')
         ->get();
 
-        $averias2 = DB::select('select * from reportes order by id desc');
-
+        $averias2 = DB::connection('pgsql')
+        ->table('reportes')
+        ->whereDate('fecha','>=',$request->fecha,'and')
+        ->whereDate('fecha','<=',$request->fecha2)
+        ->orderBy('fecha','asc')
+        ->get();
         $respuesta = $averias -> concat($averias2);
 
         return datatables($respuesta)->toJson();

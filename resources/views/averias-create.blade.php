@@ -48,13 +48,26 @@
                         <div class="col">
                             <div class="card">
                                 <div class="row">
+                                    <div class="col">
+                                        <x-adminlte-select id="dependencia" name="dependencia" label="Dependencia"  required>
+                                            <option value="">-- Seleccione una dependencia --</option>
+                                            @foreach ($dependencias as $item)
+                                                <option value="{{ $item->id }}">{{ $item->dependencia }}</option>                                                
+                                            @endforeach
+                                        </x-adminlte-select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col">
+                            <div class="card">
+                                <div class="row">
                                     <div class="col-3">
                                         <x-adminlte-select id="turnoReg" name="turnoReg" label="Turno Regulador"  required>
-                                            <option value="" @if (0== $tR ) selected @endif>--Seleccione el turno--</option>
-                                            <option value="1" @if (1== $tR ) selected @endif>Primer Turno</option>
-                                            <option value="2" @if (2== $tR ) selected @endif>Segundo Turno</option>
-                                            <option value="3"@if (3== $tR ) selected @endif>Tercer Turno</option>
-                                            <option value="4"@if (4== $tR ) selected @endif>Cuarto Turno</option>
+                                            <option value="" >--Seleccione el turno--</option>
                                         </x-adminlte-select>
                                     </div>
                                     <div class="col-2">
@@ -81,11 +94,8 @@
                                 <div class="row">
                                     <div class="col-3">
                                         <x-adminlte-select id="turnoJReg" name="turnoJefeReg" label="Turno Jefe Regulador"  required>
-                                            <option value="" @if (0== $tJR ) selected @endif>--Seleccione el turno--</option>
-                                            <option value="1" @if (1== $tJR ) selected @endif>Primer Turno</option>
-                                            <option value="2" @if (2== $tJR ) selected @endif>Segundo Turno</option>
-                                            <option value="3" @if (3== $tJR ) selected @endif>Tercer Turno</option>
-                                            <option value="4" @if (4== $tJR ) selected @endif>Cuarto Turno</option>
+                                            <option value="" >--Seleccione el turno--</option>
+                                            
                                         </x-adminlte-select>
                                     </div>
                                     <div class="col-2">
@@ -126,9 +136,6 @@
                                     <div class="col">
                                         <x-adminlte-select id="linea_id" name="linea" label="Linea" fgroup-class="col-md-25" required>
                                             <option value="" selected>--Seleccione la línea--</option>
-                                            @foreach ($lineas as $item)
-                                                <option value="{{ $item -> id }}">{{ $item -> nombre_linea }}</option> 
-                                            @endforeach
                                         </x-adminlte-select>
                                     </div>
                                     <div class="col">
@@ -341,6 +348,7 @@
                                 <div class="row">
                                     <div class="col">
                                         <x-adminlte-select id="evacua" name="evacua" label="Desalojado/Evacuado" required>
+                                            <option value="">--Seleccione una opcion--</option>
                                             <option value="N" >No se desalojo</option>
                                             <option value="T">Tren Completo</option>
                                             <option value="C">Carro/Parcial</option>
@@ -391,6 +399,55 @@
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
     
     $(document).ready(function(){
+
+        document.getElementById('dependencia').addEventListener('change',(e)=>{
+            let Pdependencia = e.target.value
+            fetch('/averias/getL',{
+                method : 'POST',
+                body: JSON.stringify({
+                    dependencia : Pdependencia
+                }),
+                headers:{
+                    'Content-Type': 'application/json',
+                    "X-CSRF-Token": csrfToken
+                }
+            }).then(response=>{
+                return response.json()
+            }).then( data=>{
+                var opciones="<option value='' selected>--Seleccione una línea --</option>"
+                for(let i in data){
+                    opciones+= '<option value="'+data[i].id+'">'+data[i].nombre_linea+'</option>';
+                }
+                document.getElementById("linea_id").innerHTML=opciones;
+                document.getElementById("funcion_id").innerHTML="<option value='' selected>--Seleccione una opción --</option>"
+                document.getElementById("estacion_id").innerHTML="<option value='' selected>--Seleccione una estación o interestación --</option>";
+                document.getElementById('expReg').value=0
+                document.getElementById('expJReg').value=0
+                document.getElementById("nomReg").value=''
+                    document.getElementById("catReg").innerHTML=''
+                if(Pdependencia == 'C5'){
+                    var opt = '<option value="" >--Seleccione el turno--</option>'
+                    opt+='<option value="1" >Primer Turno</option>'
+                    opt+='<option value="2" >Segundo Turno</option>'
+                    opt+='<option value="3">Tercer Turno</option>'
+                    document.getElementById("turnoReg").innerHTML=opt;
+                    document.getElementById("turnoJReg").innerHTML=opt;
+                }else if(Pdependencia == 'PCC II' || Pdependencia == 'PCL'){
+                    var opt = '<option value="" >--Seleccione el turno--</option>'
+                    opt+='<option value="1" >Primer Turno</option>'
+                    opt+='<option value="2" >Segundo Turno</option>'
+                    opt+='<option value="3">Tercer Turno</option>'
+                    opt+='<option value="4">Cuarto Turno</option>'
+                    document.getElementById("turnoReg").innerHTML=opt;
+                    document.getElementById("turnoJReg").innerHTML=opt;
+                }else{
+                    var opt = '<option value="" >--Seleccione el turno--</option>'
+                    document.getElementById("turnoReg").innerHTML=opt;
+                    document.getElementById("turnoReg").innerHTML=opt;
+                }
+
+            }).catch(error => console.error(error));
+        })
 
         document.getElementById('linea_id').addEventListener('change',(e)=>{
             
@@ -822,7 +879,7 @@
         let Pmaterial = document.getElementById('materialT').value
         let Pfuncion_tren = document.getElementById('funcion_id').value
         let Pusuario = document.getElementById('usuario').value
-
+        let Pdependencia = document.getElementById('dependencia').value
         fetch('/averias/',{
                 method : 'POST',
                 body: JSON.stringify({
@@ -852,7 +909,8 @@
                     material : Pmaterial,
                     funcion_tren : Pfuncion_tren,
                     horaFuncion : hora_func,
-                    usuario : Pusuario
+                    usuario : Pusuario,
+                    dependencia : Pdependencia
                 }),
                 headers:{
                     'Content-Type': 'application/json',

@@ -28,6 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('averias',AveriasController::class);
+    Route::post('/averias/getL',[AveriasController::class,'getL']);
     Route::post('/averias/get',[AveriasController::class,'get_estaciones']);
     Route::post('/averias/getm',[AveriasController::class,'get_motrices']);
     Route::post('/averias/getp',[AveriasController::class,'getPlantilla']);

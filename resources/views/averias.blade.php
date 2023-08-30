@@ -14,6 +14,18 @@
 @stop
 
 @section('content')
+@php
+    $hoy = date("Y-m-d");
+@endphp
+
+<div>
+    <label for="date">Fecha</label>
+    <input id="fecha" type="date" value="<?php echo $hoy;?>" min="2020-11-04" max="<?php echo $hoy;?>">
+    <label for="date"> a </label>
+    <input id="fecha2" type="date" value="<?php echo $hoy;?>" min="2020-11-04" max="<?php echo $hoy;?>">
+    <button type="button" id="filtro" class="btn btn-outline-success" >Aplicar Filtro</button>
+</div>
+
 <div class="card">
     <div class="card-body">
         <table class="table table-striped" id="averias" class="display">
@@ -50,6 +62,22 @@
     <script>
     const csrfToken = document.head.querySelector("[name~=csrf-token][content]").content;
 
+    $(document).ready(function(){
+        generaTabla()
+        document.getElementById('filtro').addEventListener('click',(e)=>{
+            $('#averias').DataTable().destroy()
+            if(document.getElementById('fecha').value == '' ){
+                document.getElementById('fecha').value='2023-01-01'
+            }else if(document.getElementById('fecha2').value == ''){
+                document.getElementById('fecha2').value='2023-01-01'
+            }
+            generaTabla()
+        })
+        
+    })
+
+
+    function generaTabla(){
         new DataTable('#averias', {
             responsive: true,
             autoWidth: false,
@@ -60,6 +88,10 @@
                 method : "POST",
                 url : "/averias/geta",
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                data : { 
+                    fecha : document.getElementById('fecha').value,
+                    fecha2 : document.getElementById('fecha2').value,
+                },
             },
             columns: [
                 { data: 'id' },
@@ -76,8 +108,9 @@
             "serverSide": true,
             "lengthMenu": [ [10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"] ],
             "pagingType": "full_numbers",
-            
+            "order": ['3','asc'],
         });
+    }
     </script>
 
 @stop
