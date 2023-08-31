@@ -3,7 +3,7 @@
 @section('title', 'Averias MR')
 
 @section('content_header')
-    <h1 class="m-0 text-dark"> Registro de Reportes de Averías de Trenes y Trenes Evacuados </h1>
+    <h1 class="m-0 text-dark"> Bitacora de regulador TCO</h1>
 @stop
 
 <style>
@@ -18,25 +18,6 @@
     }
 </style>
 @section('content')
-    @php
-        $tR = 0;
-        $tJR = 0;
-        $eR = 0;
-        $eJR = 0;
-        $fechahoy = date("d-m-Y");
-        if (isset($turnoReg)) {
-            $tR = $turnoReg;
-        }
-        if (isset($turnoJReg)) {
-            $tJR = $turnoJReg;
-        }
-        if (isset($expedienteReg)) {
-            $eR = $expedienteReg;
-        }
-        if (isset($expedienteJR)) {
-            $eJR = $expedienteJR;
-        }
-    @endphp
 
     <form id="idform" action="/averias" method="post">
         @csrf
@@ -48,7 +29,7 @@
                         <div class="col">
                             <div class="card">
                                 <div class="row">
-                                    <div class="col">
+                                    <div class="col-4">
                                         <x-adminlte-select id="dependencia" name="dependencia" label="Dependencia"  required>
                                             <option value="">-- Seleccione una dependencia --</option>
                                             @foreach ($dependencias as $item)
@@ -71,7 +52,7 @@
                                         </x-adminlte-select>
                                     </div>
                                     <div class="col-2">
-                                        <x-adminlte-input id="expReg" type="number" value='{{ $eR }}' label="Expediente" name="expedienteReg" required/>
+                                        <x-adminlte-input id="expReg" type="number" label="Expediente" name="expedienteReg" required/>
                                     </div>
                                     <div class="col">
                                         <x-adminlte-input id="nomReg" name="regulador" label="Nombre" disabled/>
@@ -99,7 +80,7 @@
                                         </x-adminlte-select>
                                     </div>
                                     <div class="col-2">
-                                        <x-adminlte-input id="expJReg" type="number" value='{{ $eJR }}' label="Expediente" name="expedienteJReg" required/>
+                                        <x-adminlte-input id="expJReg" type="number"  label="Expediente" name="expedienteJReg" required/>
                                     </div>
                                     <div class="col">
                                         <x-adminlte-input id="nomJReg" name="jeferegN" label="Nombre" disabled/>
