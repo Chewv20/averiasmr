@@ -79,7 +79,30 @@ class AveriasController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $dependencias = DB::connection('pgsql')
+        ->table('dependencias')
+        ->get();
+
+        $averias = DB::connection('pgsql2')
+        ->table('tipos')
+        ->where('status','S')
+        ->orderBy('tipo','asc')
+        ->get();
+
+        $reporte = DB::connection('pgsql')
+        ->table('reportes')
+        ->where('id',$id)
+        ->get();
+        
+        $reporte2 = DB::connection('pgsql2')
+        ->table('reportes')
+        ->where('id',$id)
+        ->get();
+
+        $respuesta = $reporte -> concat($reporte2);
+
+        return view('averias-update', compact('dependencias','averias','respuesta'));
+
     }
 
     /**

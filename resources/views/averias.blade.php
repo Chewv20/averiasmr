@@ -36,6 +36,7 @@
                 <th>Fecha</th>
                 <th>Falla</th>
                 <th>Tipo</th>
+                <th>Acciones</th>
             </thead>
 
 
@@ -99,7 +100,16 @@
                 { data: 'numero' },
                 { data: 'fecha' },
                 { data: 'falla' },
-                { data: 'tipo' }
+                { data: 'tipo' },
+                {
+                    "data": null,
+                    "bSortable": false,
+                    "Export": false,
+                    "mRender": function(data, type, value) {
+                        return '<a href="/averias/'+value["id"]+'" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i>Editar</a> <a href="/averias/delete/'+value["id"]+'" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i>Eliminar</a>'
+                        
+                    }
+                },
             ],
             dom: 'Blfrtip',
             buttons: ['copy', 'csv', 'excel', 'pdf', 'print'],
